@@ -1,16 +1,24 @@
+import os
 import requests
 import random
 import urllib3
 from concurrent.futures import ThreadPoolExecutor
 from fake_useragent import UserAgent
 from urllib3.exceptions import InsecureRequestWarning
+from colorama import Fore, Style, init
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 
 def print_banner():
-    banner = r"""
-    GITHUB : IM-Hanzou
+    banner_text = "zRev2 - Reverse IP Lookup using API"
+    banner_github = "Github: IM-Hanzou"
+    text_color = Fore.YELLOW
+    banner_color = Fore.CYAN
+    github_color = Fore.MAGENTA
+
+    banner = f"""
+  {text_color}{banner_text}{Fore.RESET}{banner_color}
         _______                   _____   
        |_   __ \                 / ___ `. 
  ____    | |__) |  .---.  _   __|_/___) | 
@@ -18,7 +26,7 @@ def print_banner():
  .' /_  _| |  \ \_| \__., \ \/ // /_____  
 [_____]|____| |___|'.__.'  \__/ |_______| 
                                           
-   zRev2 - Reverse IP Lookup using API
+   {Fore.RESET}{github_color}{banner_github}{Fore.RESET}
     """
     print(banner)
 
@@ -33,16 +41,20 @@ def reverse_ip(ip):
             if data["status"] == 200:
                 domains = data["result"]
                 with open('results.txt', 'a') as f:
-                    for domain in domains:
-                        f.write(domain + '\n')
-                count = len(domains)
-                print(ip + ': ' + str(count) + ' domains')
+                    if domains:
+                        for domain in domains:
+                            f.write(domain + '\n')
+                        count = len(domains)
+                        print(f'{Fore.CYAN}${Fore.RESET}{Fore.YELLOW}IP{Fore.RESET} [ {Fore.GREEN}{ip.strip()}{Fore.RESET} ] Got [{Fore.GREEN}{str(count)}{Fore.RESET}] domains')
+                    else:
+                        f.write("Doesn't have domains\n")
+                        print(f'{Fore.CYAN}${Fore.RESET}{Fore.YELLOW}IP{Fore.RESET} [ {Fore.RED}{ip.strip()}{Fore.RESET} ] Doesn\'t have domains')
             else:
-                print(ip + ': API returned an error - ' + data["message"])
+                print(f'{Fore.CYAN}${Fore.RESET}{Fore.YELLOW}IP{Fore.RESET} [ {Fore.RED}{ip.strip()}{Fore.RESET} ] API returned an error - {Fore.RED}{data["message"]}{Fore.RESET}')
         else:
-            print(ip + ': Failed to fetch data, Your IP blocked from API Host')
+            print(f'{Fore.CYAN}${Fore.RESET}{Fore.YELLOW}IP{Fore.RESET} [ {Fore.RED}{ip.strip()}{Fore.RESET} ] Failed to fetch data, Your IP blocked from API Host')
     except:
-        print(ip + ': Failed to connect to the API, API Host down!')
+        print(f'{Fore.CYAN}${Fore.RESET}{Fore.YELLOW}IP{Fore.RESET} [ {Fore.RED}{ip.strip()}{Fore.RESET} ] Failed to connect to the API, API Host down!')
 
 def scan_ips(ips, threads):
     with ThreadPoolExecutor(max_workers=threads) as executor:
@@ -57,10 +69,17 @@ def count_total_domains():
         lines = f.readlines()
         return len(lines)
 
+def create_results_file():
+    if not os.path.exists('results.txt'):
+        with open('results.txt', 'w'):
+            pass
+
 def main():
     print_banner()
     file_name = input("File list of IPs: ")
     threads = int(input("Number threads to use: "))
+
+    create_results_file()
 
     with open(file_name, 'r') as f:
         ips = f.readlines()
@@ -68,8 +87,9 @@ def main():
     scan_ips(ips, threads)
 
     total_domains = count_total_domains()
-    print(f"\n\nReverse IP lookup done. Result saved to results.txt [{total_domains} Domains]")
-    print("If you only got 1 domain, try to change your IP, or use VPN")
+    print(f"\n{Fore.GREEN}Reverse IP Lookup Done{Fore.RESET}\n")
+    print(f"=> Result saved to results.txt")
+    print(f"=> You got {Fore.GREEN}{total_domains}{Fore.RESET} Domains")
 
 if __name__ == "__main__":
     main()
