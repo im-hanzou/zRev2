@@ -23,7 +23,7 @@ def print_banner():
     print(banner)
 
 def reverse_ip(ip):
-    url = f"https://api.rostovabrothers.biz.id/beta.php?ip={ip}"
+    url = f"https://api.rostovabrothers.biz.id/api.php?ip={ip}"
     user_agent = UserAgent().random
     headers = {"User-Agent": user_agent}
     try:
