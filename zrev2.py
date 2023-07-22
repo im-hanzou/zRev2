@@ -35,7 +35,7 @@ def reverse_ip(ip):
     user_agent = UserAgent().random
     headers = {"User-Agent": user_agent}
     try:
-        response = requests.get(url, headers=headers, timeout=10, verify=False)
+        response = requests.get(url, headers=headers, verify=False)
         if response.status_code == 200:
             data = response.json()
             if data["status"] == 200:
