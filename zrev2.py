@@ -47,7 +47,7 @@ def reverse_ip(ip):
             else:
                 print(f'{Fore.CYAN}${Fore.RESET}{Fore.YELLOW}IP{Fore.RESET} [ {Fore.RED}{ip.strip()}{Fore.RESET} ] API returned an error - {Fore.RED}{data["message"]}{Fore.RESET}')
         else:
-            print(f'{Fore.CYAN}${Fore.RESET}{Fore.YELLOW}IP{Fore.RESET} [ {Fore.RED}{ip.strip()}{Fore.RESET} ] Failed to fetch data, Your IP maybe blocked from API Host')
+            print(f'{Fore.CYAN}${Fore.RESET}{Fore.YELLOW}IP{Fore.RESET} [ {Fore.RED}{ip.strip()}{Fore.RESET} ] Failed to fetch data, Your IP maybe doesn\'t have domains')
     except:
         print(f'{Fore.CYAN}${Fore.RESET}{Fore.YELLOW}IP{Fore.RESET} [ {Fore.RED}{ip.strip()}{Fore.RESET} ] Failed to connect to the API, API Host down!')
 
