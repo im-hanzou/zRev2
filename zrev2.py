@@ -1,9 +1,7 @@
 import os
 import requests
-import random
 import urllib3
 from concurrent.futures import ThreadPoolExecutor
-from fake_useragent import UserAgent
 from urllib3.exceptions import InsecureRequestWarning
 from colorama import Fore, Style, init
 
@@ -32,10 +30,8 @@ def print_banner():
 
 def reverse_ip(ip):
     url = f"https://api.rostovabrothers.com/api?ip={ip}"
-    user_agent = UserAgent().random
-    headers = {"User-Agent": user_agent}
     try:
-        response = requests.get(url, headers=headers, verify=False)
+        response = requests.get(url, verify=False)
         if response.status_code == 200:
             data = response.json()
             if data["status"] == 200:
@@ -76,8 +72,18 @@ def create_results_file():
 
 def main():
     print_banner()
-    file_name = input("File list of IPs: ")
-    threads = int(input("Number threads to use: "))
+    file_name = input("IPs File: ")
+    threads_input = input("Threads: ")
+
+    if not os.path.exists(file_name):
+        print(f"{Fore.RED}Error: File '{file_name}' not found.{Fore.RESET}")
+        return
+
+    try:
+        threads = int(threads_input)
+    except ValueError:
+        print(f"{Fore.RED}Error: Thread must be integer. Gimme number pls!.{Fore.RESET}")
+        return
 
     create_results_file()
 
