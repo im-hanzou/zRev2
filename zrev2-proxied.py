@@ -1,9 +1,7 @@
 import os
 import requests
-import random
 import urllib3
 from concurrent.futures import ThreadPoolExecutor
-from fake_useragent import UserAgent
 from urllib3.exceptions import InsecureRequestWarning
 from colorama import Fore, Style, init
 
@@ -41,16 +39,13 @@ def is_valid_proxy(proxy):
     return False
 
 def reverse_ip(ip, proxies=None):
-    url = f"https://api.rostovabrothers.biz.id/api?ip={ip.strip()}"
-    user_agent = UserAgent().random
-    headers = {"User-Agent": user_agent}
-    
+    url = f"https://api.rostovabrothers.com/api?ip={ip.strip()}"
     try:
         if proxies:
             proxy = random.choice(proxies)
-            response = requests.get(url, headers=headers, proxies={'http': proxy, 'https': proxy}, verify=False)
+            response = requests.get(url, proxies={'http': proxy, 'https': proxy}, verify=False)
         else:
-            response = requests.get(url, headers=headers, verify=False)
+            response = requests.get(url, verify=False)
 
         if response.status_code == 200:
             data = response.json()
