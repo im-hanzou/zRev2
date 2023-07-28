@@ -28,7 +28,7 @@ def print_banner():
     """
     print(banner)
 
-def reverse_ip(ip):
+def reverse_ip(ip, result_file):
     url = f"https://api.rostovabrothers.com/api?ip={ip}"
     try:
         response = requests.get(url, verify=False)
@@ -37,7 +37,7 @@ def reverse_ip(ip):
             if data["status"] == 200:
                 domains = data["result"]
                 if domains:
-                    with open('results.txt', 'a') as f:
+                    with open(result_file, 'a') as f:
                         for domain in domains:
                             f.write(domain + '\n')
                     count = len(domains)
@@ -47,33 +47,34 @@ def reverse_ip(ip):
             else:
                 print(f'{Fore.CYAN}${Fore.RESET}{Fore.YELLOW}IP{Fore.RESET} [ {Fore.RED}{ip.strip()}{Fore.RESET} ] API returned an error - {Fore.RED}{data["message"]}{Fore.RESET}')
         else:
-            print(f'{Fore.CYAN}${Fore.RESET}{Fore.YELLOW}IP{Fore.RESET} [ {Fore.RED}{ip.strip()}{Fore.RESET} ] Failed to fetch data, Your IP maybe doesn\'t have domains')
+            print(f'{Fore.CYAN}${Fore.RESET}{Fore.YELLOW}IP{Fore.RESET} [ {Fore.RED}{ip.strip()}{Fore.RESET} ] Failed to fetch data, Your IP may not have domains')
     except:
         print(f'{Fore.CYAN}${Fore.RESET}{Fore.YELLOW}IP{Fore.RESET} [ {Fore.RED}{ip.strip()}{Fore.RESET} ] Failed to connect to the API, API Host down!')
 
 
-def scan_ips(ips, threads):
+def scan_ips(ips, threads, result_file): 
     with ThreadPoolExecutor(max_workers=threads) as executor:
         tasks = []
         for ip in ips:
-            tasks.append(executor.submit(reverse_ip, ip.strip()))
+            tasks.append(executor.submit(reverse_ip, ip.strip(), result_file))
         for task in tasks:
             task.result()
 
-def count_total_domains():
-    with open('results.txt', 'r') as f:
+def count_total_domains(result_file):
+    with open(result_file, 'r') as f:
         lines = f.readlines()
         return len(lines)
 
-def create_results_file():
-    if not os.path.exists('results.txt'):
-        with open('results.txt', 'w'):
+def create_results_file(result_file):
+    if not os.path.exists(result_file):
+        with open(result_file, 'w'):
             pass
 
 def main():
     print_banner()
     file_name = input("IPs File: ")
     threads_input = input("Threads: ")
+    result_file = input("Output File Name (result.txt by default): ")
 
     if not os.path.exists(file_name):
         print(f"{Fore.RED}Error: File '{file_name}' not found.{Fore.RESET}")
@@ -82,19 +83,22 @@ def main():
     try:
         threads = int(threads_input)
     except ValueError:
-        print(f"{Fore.RED}Error: Thread must be integer. Gimme number pls!.{Fore.RESET}")
+        print(f"{Fore.RED}Error: Thread must be an integer. Please provide a valid number.{Fore.RESET}")
         return
 
-    create_results_file()
+    if not result_file.strip():
+        result_file = 'results.txt'
+
+    create_results_file(result_file) 
 
     with open(file_name, 'r') as f:
         ips = f.readlines()
 
-    scan_ips(ips, threads)
+    scan_ips(ips, threads, result_file)
 
-    total_domains = count_total_domains()
+    total_domains = count_total_domains(result_file)
     print(f"\n{Fore.GREEN}Reverse IP Lookup Done{Fore.RESET}\n")
-    print(f"=> Result saved to results.txt")
+    print(f"=> Result saved to {result_file}")
     print(f"=> You got {Fore.GREEN}{total_domains}{Fore.RESET} Domains")
 
 if __name__ == "__main__":
